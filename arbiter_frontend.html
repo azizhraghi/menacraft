@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARBITER — AI Forensic Claims Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #020408;
+    --abyss: #060d14;
+    --surface: #0a141f;
+    --panel: #0d1a27;
+    --edge: #112233;
+    --glow-border: #1a3550;
+    --amber: #f5a623;
+    --amber-dim: #a06c10;
+    --red: #e53935;
+    --red-glow: rgba(229,57,53,0.3);
+    --green: #00e676;
+    --green-glow: rgba(0,230,118,0.2);
+    --cyan: #00bcd4;
+    --cyan-dim: #006070;
+    --text-primary: #d4e4f5;
+    --text-secondary: #6a8fa8;
+    --text-dim: #2a4a68;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-display: 'Orbitron', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--void);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--edge);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    background: var(--abyss);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-shield {
+    width: 32px;
+    height: 32px;
+    position: relative;
+  }
+
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: var(--amber);
+    text-shadow: 0 0 20px rgba(245,166,35,0.5);
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .status-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ── LEFT PANEL - UPLOAD ── */
+  .upload-panel {
+    background: var(--abyss);
+    border-right: 1px solid var(--edge);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .panel-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--amber);
+    font-weight: 400;
+  }
+
+  .drop-zone {
+    border: 1px dashed var(--cyan-dim);
+    border-radius: 4px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .drop-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(0,188,212,0.03) 100%);
+  }
+
+  .drop-zone:hover {
+    border-color: var(--cyan);
+    background: rgba(0,188,212,0.05);
+  }
+
+  .drop-zone.drag-over {
+    border-color: var(--amber);
+    background: rgba(245,166,35,0.05);
+  }
+
+  .drop-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+
+  .drop-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .drop-text strong {
+    color: var(--cyan);
+    display: block;
+    font-size: 15px;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  #file-input { display: none; }
+
+  .preview-container {
+    position: relative;
+    display: none;
+  }
+
+  .preview-container.visible { display: block; }
+
+  .preview-img {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--edge);
+    display: block;
+  }
+
+  .preview-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    padding: 10px 12px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--cyan);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  .form-select option {
+    background: var(--surface);
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, var(--amber) 0%, #e8961a 100%);
+    border: none;
+    border-radius: 3px;
+    color: var(--void);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(245,166,35,0.4);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .submit-btn.loading {
+    background: var(--panel);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+
+  /* ── RIGHT PANEL - RESULTS ── */
+  .results-panel {
+    background: var(--void);
+    overflow-y: auto;
+  }
+
+  /* IDLE STATE */
+  .idle-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    opacity: 0.4;
+  }
+
+  .idle-logo {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 900;
+    color: var(--text-dim);
+    letter-spacing: 20px;
+  }
+
+  .idle-sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+  }
+
+  /* LOADING STATE */
+  .loading-state {
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .loading-state.active { display: flex; }
+
+  .pipeline-viz {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 380px;
+  }
+
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-left: 2px solid var(--edge);
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .pipeline-step.active {
+    border-left-color: var(--amber);
+    background: rgba(245,166,35,0.05);
+  }
+
+  .pipeline-step.done {
+    border-left-color: var(--green);
+  }
+
+  .step-indicator {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--edge);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .pipeline-step.active .step-indicator {
+    background: var(--amber);
+    box-shadow: 0 0 10px rgba(245,166,35,0.6);
+    animation: pulse 0.8s infinite;
+  }
+
+  .pipeline-step.done .step-indicator {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .step-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    flex: 1;
+  }
+
+  .pipeline-step.active .step-name { color: var(--amber); }
+  .pipeline-step.done .step-name { color: var(--green); }
+
+  .step-status {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .pipeline-step.done .step-status { color: var(--green); }
+
+  .loading-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--amber);
+    animation: pulse 1.5s infinite;
+  }
+
+  /* RESULTS */
+  .results-content {
+    display: none;
+    padding: 32px;
+    gap: 24px;
+    flex-direction: column;
+  }
+
+  .results-content.active { display: flex; }
+
+  /* VERDICT CARD */
+  .verdict-card {
+    border-radius: 6px;
+    padding: 28px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .verdict-card.reject { background: linear-gradient(135deg, rgba(229,57,53,0.15) 0%, rgba(229,57,53,0.05) 100%); border: 1px solid rgba(229,57,53,0.4); }
+  .verdict-card.flag { background: linear-gradient(135deg, rgba(245,166,35,0.15) 0%, rgba(245,166,35,0.05) 100%); border: 1px solid rgba(245,166,35,0.4); }
+  .verdict-card.approve { background: linear-gradient(135deg, rgba(0,230,118,0.1) 0%, rgba(0,230,118,0.03) 100%); border: 1px solid rgba(0,230,118,0.3); }
+
+  .verdict-grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .verdict-action {
+    text-align: center;
+  }
+
+  .verdict-action-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .verdict-action-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 3px;
+  }
+
+  .verdict-action-value.reject { color: var(--red); text-shadow: 0 0 20px var(--red-glow); }
+  .verdict-action-value.flag { color: var(--amber); text-shadow: 0 0 20px rgba(245,166,35,0.4); }
+  .verdict-action-value.approve { color: var(--green); text-shadow: 0 0 20px var(--green-glow); }
+
+  .verdict-center {
+    flex: 1;
+  }
+
+  .verdict-ruling {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .verdict-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+  }
+
+  .verdict-fraud-type {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 6px;
+  }
+
+  .verdict-score {
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .score-ring {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    margin: 0 auto 8px;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .score-number {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .score-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* CLAIM ID */
+  .claim-id-bar {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .claim-id-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+  }
+
+  .claim-id-value {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--amber);
+    letter-spacing: 2px;
+  }
+
+  .report-btn {
+    background: transparent;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .report-btn:hover {
+    background: rgba(245,166,35,0.1);
+  }
+
+  /* SIGNAL GRID */
+  .signals-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .section-header {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--text-secondary);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .signal-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 60px 80px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    border-left: 3px solid var(--edge);
+    transition: all 0.2s;
+  }
+
+  .signal-row.high { border-left-color: var(--red); }
+  .signal-row.medium { border-left-color: var(--amber); }
+  .signal-row.low { border-left-color: #84cc16; }
+  .signal-row.clean { border-left-color: var(--green); }
+
+  .signal-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+  }
+
+  .signal-bar-wrap {
+    height: 6px;
+    background: var(--edge);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .signal-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .signal-bar.high { background: linear-gradient(90deg, var(--red), #ff6b6b); }
+  .signal-bar.medium { background: linear-gradient(90deg, var(--amber-dim), var(--amber)); }
+  .signal-bar.low { background: linear-gradient(90deg, #5a7f1a, #84cc16); }
+  .signal-bar.clean { background: linear-gradient(90deg, #00894a, var(--green)); }
+
+  .signal-score {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    text-align: right;
+    font-weight: bold;
+  }
+
+  .signal-score.high { color: var(--red); }
+  .signal-score.medium { color: var(--amber); }
+  .signal-score.low { color: #84cc16; }
+  .signal-score.clean { color: var(--green); }
+
+  .signal-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-align: right;
+    color: var(--text-secondary);
+  }
+
+  /* DEBATE SECTION */
+  .debate-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .debate-card {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .debate-header {
+    padding: 10px 16px;
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .debate-card.prosecution .debate-header {
+    background: rgba(229,57,53,0.15);
+    color: var(--red);
+    border-bottom: 1px solid rgba(229,57,53,0.3);
+  }
+
+  .debate-card.defense .debate-header {
+    background: rgba(0,230,118,0.08);
+    color: var(--green);
+    border-bottom: 1px solid rgba(0,230,118,0.2);
+  }
+
+  .debate-body {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    font-family: var(--font-ui);
+    min-height: 120px;
+  }
+
+  /* HEATMAPS */
+  .heatmaps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  .heatmap-card {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .heatmap-header {
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .heatmap-img {
+    width: 100%;
+    display: block;
+  }
+
+  /* EXIF TABLE */
+  .exif-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .exif-row {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .exif-key {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+  }
+
+  .exif-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cyan);
+  }
+
+  /* FLAGS */
+  .flags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .flag-item {
+    background: rgba(229,57,53,0.08);
+    border: 1px solid rgba(229,57,53,0.25);
+    border-radius: 3px;
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #ff8a80;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .flag-icon { opacity: 0.8; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--abyss); }
+  ::-webkit-scrollbar-thumb { background: var(--edge); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--glow-border); }
+
+  /* ANIMATE IN */
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    animation: fadeSlideIn 0.4s ease forwards;
+  }
+
+  .animate-in:nth-child(1) { animation-delay: 0.0s; }
+  .animate-in:nth-child(2) { animation-delay: 0.08s; }
+  .animate-in:nth-child(3) { animation-delay: 0.16s; }
+  .animate-in:nth-child(4) { animation-delay: 0.24s; }
+  .animate-in:nth-child(5) { animation-delay: 0.32s; }
+  .animate-in:nth-child(6) { animation-delay: 0.40s; }
+
+  /* SAM severity badge */
+  .severity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+  }
+
+  .no-flags {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--green);
+    padding: 12px 16px;
+    background: rgba(0,230,118,0.05);
+    border: 1px solid rgba(0,230,118,0.15);
+    border-radius: 3px;
+  }
+
+  /* Corner decoration */
+  .corner-deco {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--amber);
+    border-style: solid;
+    opacity: 0.4;
+  }
+
+  .corner-deco.tl { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+  .corner-deco.tr { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
+  .corner-deco.bl { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
+  .corner-deco.br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+  .api-url-hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: -8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg class="logo-shield" viewBox="0 0 32 32" fill="none">
+      <path d="M16 2L4 7v9c0 7.5 5.2 14.5 12 16.5C23.8 30.5 28 23.5 28 16V7L16 2z" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <path d="M16 8L10 11v5c0 3.5 2.5 6.8 6 8c3.5-1.2 6-4.5 6-8v-5L16 8z" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="1"/>
+      <line x1="12" y1="16" x2="15" y2="19" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="15" y1="19" x2="20" y2="13" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="logo-text">ARBITER</div>
+      <div class="logo-sub">FORENSIC CLAIMS INTELLIGENCE</div>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="status-dot"></div>
+    <div class="status-text">SYSTEM OPERATIONAL</div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- LEFT: UPLOAD PANEL -->
+  <div class="upload-panel">
+    <div class="panel-title">// CLAIM SUBMISSION</div>
+
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <div class="drop-icon">⬡</div>
+      <div class="drop-text">
+        <strong>DROP CLAIM PHOTO HERE</strong>
+        Click to select • JPG, PNG, WEBP
+      </div>
+    </div>
+    <input type="file" id="file-input" accept="image/*">
+
+    <div class="preview-container" id="preview-container">
+      <img class="preview-img" id="preview-img" src="" alt="Preview">
+      <div class="preview-badge">LOADED</div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">CLAIM DESCRIPTION</div>
+      <textarea class="form-textarea" id="claim-text" placeholder="Describe the incident and damage claimed..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">INCIDENT TYPE</div>
+      <select class="form-select" id="incident-type">
+        <option value="collision">Collision</option>
+        <option value="rear_end">Rear-End Impact</option>
+        <option value="side_impact">Side Impact</option>
+        <option value="rollover">Rollover</option>
+        <option value="vandalism">Vandalism</option>
+        <option value="flood">Flood Damage</option>
+        <option value="fire">Fire Damage</option>
+        <option value="hail">Hail Damage</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">CLAIM DATE (YYYY-MM-DD)</div>
+      <input type="date" class="form-input" id="claim-date">
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">INCIDENT LOCATION (OPTIONAL)</div>
+      <input type="text" class="form-input" id="claim-location" placeholder="City, Street or GPS coords">
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitClaim()" disabled>
+      INITIATE FORENSIC ANALYSIS
+    </button>
+
+    <div class="api-url-hint" id="api-hint">API: http://localhost:8000</div>
+  </div>
+
+  <!-- RIGHT: RESULTS PANEL -->
+  <div class="results-panel" id="results-panel">
+
+    <!-- IDLE -->
+    <div class="idle-state" id="idle-state">
+      <div class="idle-logo">ARB</div>
+      <div class="idle-sub">AWAITING CLAIM SUBMISSION</div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-state" id="loading-state">
+      <div class="loading-label">FORENSIC ANALYSIS IN PROGRESS</div>
+      <div class="pipeline-viz" id="pipeline-viz">
+        <div class="pipeline-step" id="step-ela">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 1 — ELA FORENSICS</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+        <div class="pipeline-step" id="step-fft">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 1 — FFT AI FINGERPRINT</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+        <div class="pipeline-step" id="step-phash">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 1 — PHASH DEDUPLICATION</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+        <div class="pipeline-step" id="step-semantic">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 2 — SEMANTIC ANALYSIS</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+        <div class="pipeline-step" id="step-temporal">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 3 — TEMPORAL FORENSICS</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+        <div class="pipeline-step" id="step-debate">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 4 — AI TRIBUNAL DEBATE</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+        <div class="pipeline-step" id="step-verdict">
+          <div class="step-indicator"></div>
+          <div class="step-name">LAYER 5 — VERDICT ENGINE</div>
+          <div class="step-status">QUEUED</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-content" id="results-content"></div>
+
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+let selectedFile = null;
+let currentClaimId = null;
+
+// File handling
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const previewContainer = document.getElementById('preview-container');
+const previewImg = document.getElementById('preview-img');
+const submitBtn = document.getElementById('submit-btn');
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+function handleFile(file) {
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    previewImg.src = e.target.result;
+    previewContainer.classList.add('visible');
+  };
+  reader.readAsDataURL(file);
+  submitBtn.disabled = false;
+}
+
+// Pipeline animation
+const steps = ['ela', 'fft', 'phash', 'semantic', 'temporal', 'debate', 'verdict'];
+let stepIndex = 0;
+let stepTimer = null;
+
+function startPipeline() {
+  stepIndex = 0;
+  steps.forEach(s => {
+    const el = document.getElementById('step-' + s);
+    el.classList.remove('active', 'done');
+    el.querySelector('.step-status').textContent = 'QUEUED';
+  });
+  advanceStep();
+}
+
+function advanceStep() {
+  if (stepIndex > 0) {
+    const prev = document.getElementById('step-' + steps[stepIndex - 1]);
+    prev.classList.remove('active');
+    prev.classList.add('done');
+    prev.querySelector('.step-status').textContent = 'DONE ✓';
+  }
+  if (stepIndex < steps.length) {
+    const curr = document.getElementById('step-' + steps[stepIndex]);
+    curr.classList.add('active');
+    curr.querySelector('.step-status').textContent = 'RUNNING...';
+    stepIndex++;
+    stepTimer = setTimeout(advanceStep, 900);
+  }
+}
+
+function completePipeline() {
+  clearTimeout(stepTimer);
+  steps.forEach(s => {
+    const el = document.getElementById('step-' + s);
+    el.classList.remove('active');
+    el.classList.add('done');
+    el.querySelector('.step-status').textContent = 'DONE ✓';
+  });
+}
+
+// Submit
+async function submitClaim() {
+  if (!selectedFile) return;
+
+  // Show loading
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('results-content').classList.remove('active');
+  document.getElementById('loading-state').classList.add('active');
+
+  submitBtn.disabled = true;
+  submitBtn.classList.add('loading');
+  submitBtn.textContent = 'ANALYZING...';
+
+  startPipeline();
+
+  const formData = new FormData();
+  formData.append('image', selectedFile);
+  formData.append('claim_text', document.getElementById('claim-text').value);
+  formData.append('incident_type', document.getElementById('incident-type').value);
+  formData.append('claim_date', document.getElementById('claim-date').value);
+  formData.append('claim_location', document.getElementById('claim-location').value);
+
+  try {
+    const resp = await fetch(`${API}/analyze`, { method: 'POST', body: formData });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    currentClaimId = data.claim_id;
+
+    completePipeline();
+    await new Promise(r => setTimeout(r, 600));
+
+    renderResults(data);
+
+  } catch (err) {
+    document.getElementById('loading-state').classList.remove('active');
+    document.getElementById('idle-state').style.display = '';
+    alert('Analysis failed: ' + err.message + '\n\nMake sure the backend is running on localhost:8000');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('loading');
+    submitBtn.textContent = 'INITIATE FORENSIC ANALYSIS';
+  }
+}
+
+function getScoreClass(score) {
+  if (score >= 0.75) return 'high';
+  if (score >= 0.45) return 'medium';
+  if (score >= 0.2) return 'low';
+  return 'clean';
+}
+
+function getScoreColor(score) {
+  if (score >= 0.75) return '#e53935';
+  if (score >= 0.45) return '#f5a623';
+  if (score >= 0.2) return '#84cc16';
+  return '#00e676';
+}
+
+function renderResults(data) {
+  const v = data.verdict;
+  const scores = data.layer_scores;
+  const debate = data.debate;
+  const action = v.action.toLowerCase().replace('_', '-');
+
+  const actionClass = action === 'auto-approve' ? 'approve' : action;
+  const actionDisplay = v.action === 'AUTO_APPROVE' ? 'APPROVED' : v.action;
+  const scoreColor = getScoreColor(v.risk_score);
+
+  // Ring SVG
+  const pct = v.risk_score_percent;
+  const circ = 2 * Math.PI * 36;
+  const dash = (pct / 100) * circ;
+
+  // All flags
+  const allFlags = [
+    ...(scores.temporal?.flags || []),
+    ...(scores.phash?.matched_claim ? [`Duplicate image: matches claim ${scores.phash.matched_claim}`] : []),
+    ...(scores.fft?.generator_type && scores.fft.generator_type !== 'NATURAL_CAMERA' ? [`Generator detected: ${scores.fft.generator_type}`] : []),
+  ];
+
+  const fraudTypeColor = {
+    GEN_AI: '#e53935', SPLICE_FRAUD: '#e53935', RECYCLED_CLAIM: '#f5a623',
+    PRE_EXISTING: '#f5a623', METADATA_STRIPPED: '#f5a623', GEO_MISMATCH: '#f5a623',
+    AUTHENTIC: '#00e676', PHYSICS_FRAUD: '#e53935'
+  }[v.fraud_type] || '#6a8fa8';
+
+  const signalDefs = [
+    { key: 'ela', name: 'ELA', label: 'MANIPULATION' },
+    { key: 'fft', name: 'FFT', label: 'AI GENERATION' },
+    { key: 'phash', name: 'pHASH', label: 'DUPLICATE' },
+    { key: 'clip', name: 'CLIP', label: 'CONTEXT' },
+    { key: 'mahalanobis', name: 'DINOv2', label: 'OUTLIER' },
+    { key: 'temporal', name: 'TEMPORAL', label: 'METADATA' },
+  ];
+
+  document.getElementById('results-content').innerHTML = `
+    <!-- CLAIM ID -->
+    <div class="claim-id-bar animate-in">
+      <div>
+        <div class="claim-id-label">CLAIM IDENTIFIER</div>
+        <div class="claim-id-value">${data.claim_id}</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary)">${new Date(data.timestamp).toLocaleString()}</div>
+        <a class="report-btn" href="${API}/report/${data.claim_id}" target="_blank">⬇ PDF REPORT</a>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="verdict-card ${actionClass} animate-in" style="position:relative">
+      <div class="corner-deco tl"></div><div class="corner-deco tr"></div>
+      <div class="corner-deco bl"></div><div class="corner-deco br"></div>
+      <div class="verdict-grid">
+        <div class="verdict-action">
+          <div class="verdict-action-label">VERDICT</div>
+          <div class="verdict-action-value ${actionClass}">${actionDisplay}</div>
+        </div>
+        <div class="verdict-center">
+          <div class="verdict-ruling">${v.ruling}</div>
+          <div>
+            <span class="verdict-fraud-type" style="background:${fraudTypeColor}20;border:1px solid ${fraudTypeColor}40;color:${fraudTypeColor};font-family:var(--font-mono);font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:2px">${v.fraud_type}</span>
+          </div>
+          <div class="verdict-meta" style="margin-top:8px">CONFIDENCE: ${Math.round(v.confidence * 100)}% &nbsp;|&nbsp; RISK LEVEL: ${v.risk_level} &nbsp;|&nbsp; ${v.methodology}</div>
+        </div>
+        <div class="verdict-score">
+          <div class="score-ring">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+              <circle cx="45" cy="45" r="36" fill="none" stroke="${scoreColor}" stroke-width="6"
+                stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+                style="filter:drop-shadow(0 0 6px ${scoreColor})"/>
+            </svg>
+            <div class="score-text">
+              <div class="score-number" style="color:${scoreColor}">${pct}</div>
+              <div class="score-label">RISK %</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORENSIC SIGNALS -->
+    <div class="signals-section animate-in">
+      <div class="section-header">FORENSIC SIGNAL ANALYSIS</div>
+      ${signalDefs.map(sig => {
+        const sc = scores[sig.key];
+        if (!sc) return '';
+        const score = sc.fraud_score || 0;
+        const cls = getScoreClass(score);
+        return `
+          <div class="signal-row ${cls}">
+            <div>
+              <div class="signal-name">${sig.name}</div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:1px">${sig.label}</div>
+            </div>
+            <div class="signal-bar-wrap">
+              <div class="signal-bar ${cls}" data-width="${Math.round(score * 100)}%" style="width:0%"></div>
+            </div>
+            <div class="signal-score ${cls}">${score.toFixed(3)}</div>
+            <div class="signal-label">${sc.label || ''}</div>
+          </div>`;
+      }).join('')}
+      ${scores.sam ? `
+        <div class="signal-row" style="border-left-color:var(--cyan)">
+          <div>
+            <div class="signal-name">SAM</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:1px">SEVERITY</div>
+          </div>
+          <div class="signal-bar-wrap">
+            <div class="signal-bar" style="width:${scores.sam.severity_percent}%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan))"></div>
+          </div>
+          <div class="signal-score" style="color:var(--cyan)">${scores.sam.severity_percent?.toFixed(1)}%</div>
+          <div class="signal-label">${scores.sam.severity_class || ''}</div>
+        </div>` : ''}
+    </div>
+
+    <!-- FLAGS -->
+    <div class="animate-in">
+      <div class="section-header" style="margin-bottom:10px">FORENSIC FLAGS</div>
+      <div class="flags-list">
+        ${allFlags.length > 0
+          ? allFlags.map(f => `<div class="flag-item"><span class="flag-icon">⚠</span>${f}</div>`).join('')
+          : '<div class="no-flags">✓ No critical forensic flags detected</div>'}
+      </div>
+    </div>
+
+    <!-- AI DEBATE -->
+    <div class="animate-in">
+      <div class="section-header" style="margin-bottom:10px">AI FORENSIC TRIBUNAL</div>
+      <div class="debate-grid">
+        <div class="debate-card prosecution">
+          <div class="debate-header">⚖ PROSECUTION</div>
+          <div class="debate-body">${debate?.prosecutor?.arguments || 'N/A'}</div>
+        </div>
+        <div class="debate-card defense">
+          <div class="debate-header">🛡 DEFENSE</div>
+          <div class="debate-body">${debate?.defender?.arguments || 'N/A'}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEATMAPS -->
+    ${(scores.ela?.heatmap_b64 || scores.fft?.spectrum_b64 || scores.sam?.overlay_b64) ? `
+    <div class="animate-in">
+      <div class="section-header" style="margin-bottom:10px">VISUAL FORENSICS</div>
+      <div class="heatmaps-grid">
+        ${scores.ela?.heatmap_b64 ? `<div class="heatmap-card"><div class="heatmap-header">ELA HEATMAP</div><img class="heatmap-img" src="data:image/png;base64,${scores.ela.heatmap_b64}"></div>` : ''}
+        ${scores.fft?.spectrum_b64 ? `<div class="heatmap-card"><div class="heatmap-header">FFT SPECTRUM</div><img class="heatmap-img" src="data:image/png;base64,${scores.fft.spectrum_b64}"></div>` : ''}
+        ${scores.sam?.overlay_b64 ? `<div class="heatmap-card"><div class="heatmap-header">DAMAGE OVERLAY</div><img class="heatmap-img" src="data:image/png;base64,${scores.sam.overlay_b64}"></div>` : ''}
+      </div>
+    </div>` : ''}
+
+    <!-- EXIF -->
+    <div class="animate-in">
+      <div class="section-header" style="margin-bottom:10px">METADATA FORENSICS</div>
+      <div class="exif-grid">
+        <div class="exif-row"><span class="exif-key">EXIF PRESENT</span><span class="exif-val" style="color:${scores.temporal?.raw_exif_summary?.has_exif ? 'var(--green)' : 'var(--red)'}">${scores.temporal?.raw_exif_summary?.has_exif ? 'YES' : 'NO'}</span></div>
+        <div class="exif-row"><span class="exif-key">GPS DATA</span><span class="exif-val" style="color:${scores.temporal?.raw_exif_summary?.has_gps ? 'var(--green)' : 'var(--amber)'}">${scores.temporal?.raw_exif_summary?.has_gps ? 'YES' : 'NO'}</span></div>
+        <div class="exif-row"><span class="exif-key">CAMERA</span><span class="exif-val">${scores.temporal?.raw_exif_summary?.camera || 'UNKNOWN'}</span></div>
+        <div class="exif-row"><span class="exif-key">SOFTWARE</span><span class="exif-val">${scores.temporal?.raw_exif_summary?.software || 'NONE'}</span></div>
+        <div class="exif-row"><span class="exif-key">CAPTURE TIME</span><span class="exif-val">${scores.temporal?.raw_exif_summary?.capture_time || 'UNAVAILABLE'}</span></div>
+        <div class="exif-row"><span class="exif-key">PHASH MATCH</span><span class="exif-val" style="color:${scores.phash?.matched_claim ? 'var(--red)' : 'var(--green)'}">${scores.phash?.matched_claim || 'NONE'}</span></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('loading-state').classList.remove('active');
+  document.getElementById('results-content').classList.add('active');
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.signal-bar[data-width]').forEach(bar => {
+      bar.style.width = bar.getAttribute('data-width');
+    });
+  }, 100);
+}
+</script>
+</body>
+</html>

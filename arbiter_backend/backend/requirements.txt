@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+pillow
+numpy
+scipy
+imagehash
+piexif
+mistralai
+reportlab
