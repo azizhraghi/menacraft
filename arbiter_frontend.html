@@ -1,567 +1,872 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Arbiter | Forensic Intelligence Dashboard</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-secondary-fixed": "#2d424c",
-                        "on-secondary-fixed-variant": "#495f69",
-                        "tertiary-dim": "#5bef90",
-                        "surface-container-low": "#121318",
-                        "on-error-container": "#ffa8a3",
-                        "on-error": "#490006",
-                        "secondary": "#cfe6f2",
-                        "inverse-primary": "#006976",
-                        "on-surface-variant": "#abaab0",
-                        "primary-dim": "#00d4ec",
-                        "surface-container": "#18191e",
-                        "secondary-fixed-dim": "#c1d8e4",
-                        "surface-variant": "#24252b",
-                        "primary-fixed": "#00e3fd",
-                        "on-primary-fixed": "#003840",
-                        "error": "#ff716c",
-                        "inverse-surface": "#faf8fe",
-                        "error-container": "#9f0519",
-                        "outline-variant": "#47484c",
-                        "on-tertiary": "#006834",
-                        "on-surface": "#faf8fe",
-                        "surface-tint": "#81ecff",
-                        "primary": "#81ecff",
-                        "on-primary-container": "#004d57",
-                        "on-primary-fixed-variant": "#005762",
-                        "surface": "#0d0e12",
-                        "on-background": "#faf8fe",
-                        "tertiary-fixed-dim": "#5bef90",
-                        "secondary-dim": "#c1d8e4",
-                        "primary-fixed-dim": "#00d4ec",
-                        "on-secondary-container": "#bdd4e0",
-                        "surface-container-lowest": "#000000",
-                        "surface-container-high": "#1e1f25",
-                        "primary-container": "#00e3fd",
-                        "outline": "#75757a",
-                        "error-dim": "#d7383b",
-                        "on-tertiary-fixed": "#004a23",
-                        "background": "#0d0e12",
-                        "secondary-container": "#354a53",
-                        "tertiary-container": "#6bfe9c",
-                        "surface-container-highest": "#24252b",
-                        "secondary-fixed": "#cfe6f2",
-                        "on-secondary": "#40555f",
-                        "on-primary": "#005762",
-                        "tertiary-fixed": "#6bfe9c",
-                        "inverse-on-surface": "#54555a",
-                        "tertiary": "#c3ffcd",
-                        "on-tertiary-fixed-variant": "#006a35",
-                        "surface-dim": "#0d0e12",
-                        "on-tertiary-container": "#005f2f",
-                        "surface-bright": "#2a2c32"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "fontFamily": {
-                        "headline": ["Manrope"],
-                        "body": ["Inter"],
-                        "label": ["Space Grotesk"]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .glass-panel {
-            background: rgba(30, 31, 37, 0.7);
-            backdrop-filter: blur(12px);
-        }
-        .scan-line {
-            background: linear-gradient(to bottom, transparent, #81ecff, transparent);
-            height: 100%;
-            width: 2px;
-            position: absolute;
-            left: 50%;
-            opacity: 0.3;
-        }
-        .tonal-shift {
-            background: linear-gradient(135deg, #18191e 0%, #121318 100%);
-        }
-        @keyframes scan {
-            0% { top: -10%; }
-            100% { top: 110%; }
-        }
-        .animate-scan {
-            animation: scan 4s linear infinite;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #354a53; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #81ecff; }
-        
-        .initial-hide { opacity: 0; filter: blur(4px); transition: all 0.5s ease; }
-        .show-data { opacity: 1; filter: blur(0px); }
-    </style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Arbiter — Forensic Claims Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --bg: #07080c;
+  --bg-card: #0e1017;
+  --bg-card-hover: #141620;
+  --bg-elevated: #181b26;
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(99,210,255,0.25);
+  --text: #e8eaf0;
+  --text-dim: #6b7280;
+  --text-muted: #3d4250;
+  --cyan: #63d2ff;
+  --cyan-glow: rgba(99,210,255,0.15);
+  --cyan-deep: #1a6b8a;
+  --green: #34d399;
+  --green-glow: rgba(52,211,153,0.12);
+  --amber: #fbbf24;
+  --amber-glow: rgba(251,191,36,0.12);
+  --red: #f87171;
+  --red-glow: rgba(248,113,113,0.12);
+  --font: 'Inter', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 12px;
+}
+html { font-size: 14px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(99,210,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; right: -200px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(52,211,153,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+.header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+  background: rgba(7,8,12,0.85);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+.logo {
+  display: flex; align-items: center; gap: 12px;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--cyan), #1a6b8a);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  box-shadow: 0 0 20px var(--cyan-glow);
+}
+.logo-text {
+  font-weight: 700; font-size: 15px; letter-spacing: -0.3px;
+  color: var(--text);
+}
+.logo-text span { color: var(--text-dim); font-weight: 400; }
+.header-status {
+  display: flex; align-items: center; gap: 20px; font-size: 11px;
+}
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Main Layout */
+.main { padding: 76px 32px 40px; max-width: 1440px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* Upload Section */
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 80px 40px 60px;
+  text-align: center;
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.upload-section.collapsed {
+  padding: 20px 40px;
+}
+.upload-title {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+  background: linear-gradient(135deg, var(--text) 30%, var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.upload-section.collapsed .upload-title { font-size: 18px; }
+.upload-sub {
+  font-size: 15px;
+  color: var(--text-dim);
+  max-width: 500px;
+}
+.upload-section.collapsed .upload-sub { display: none; }
+
+.drop-zone {
+  width: 100%;
+  max-width: 560px;
+  padding: 48px 32px;
+  border: 2px dashed rgba(99,210,255,0.2);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.upload-section.collapsed .drop-zone {
+  max-width: 400px; padding: 16px 24px; flex-direction: row; gap: 16px;
+}
+.drop-zone:hover {
+  border-color: var(--cyan);
+  background: rgba(99,210,255,0.03);
+}
+.drop-zone.active { border-color: var(--cyan); background: rgba(99,210,255,0.05); }
+.drop-icon {
+  font-size: 36px; opacity: 0.4;
+}
+.upload-section.collapsed .drop-icon { font-size: 20px; }
+.drop-label { font-weight: 500; color: var(--cyan); font-size: 13px; }
+.drop-hint { font-size: 11px; color: var(--text-dim); }
+.upload-section.collapsed .drop-hint { display: none; }
+
+.preview-thumb {
+  display: none;
+  width: 100%; max-width: 560px; max-height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-active);
+}
+.upload-section.collapsed .preview-thumb { max-width: 80px; max-height: 50px; border-radius: 6px; }
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 560px;
+}
+.upload-section.collapsed .form-row { display: none; }
+.form-group label {
+  display: block;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  outline: none;
+  transition: border 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--cyan);
+}
+.form-group textarea { resize: vertical; min-height: 60px; }
+
+.submit-btn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--cyan), var(--cyan-deep));
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 24px var(--cyan-glow);
+  position: relative;
+  overflow: hidden;
+}
+.submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 32px rgba(99,210,255,0.25); }
+.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.upload-section.collapsed .submit-btn { display: none; }
+
+/* Loading bar */
+.analysis-bar {
+  display: none;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.analysis-bar.active { display: block; }
+.analysis-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--cyan);
+  margin-bottom: 10px;
+  display: flex; justify-content: space-between;
+}
+.analysis-track {
+  height: 3px;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.analysis-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan-deep), var(--cyan));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+.analysis-steps {
+  display: flex; justify-content: space-between;
+  margin-top: 12px;
+  font-family: var(--mono); font-size: 9px; color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+.analysis-steps span.done { color: var(--green); }
+.analysis-steps span.active { color: var(--cyan); }
+
+/* Results Grid */
+.results { display: none; margin-top: 32px; }
+.results.active { display: block; animation: fadeUp 0.6s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Verdict Banner */
+.verdict-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.verdict-banner::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.verdict-banner.approve::before { background: var(--green); }
+.verdict-banner.flag::before { background: var(--amber); }
+.verdict-banner.reject::before { background: var(--red); }
+
+.verdict-left { display: flex; flex-direction: column; gap: 6px; }
+.verdict-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+.verdict-action { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.verdict-action.approve { color: var(--green); }
+.verdict-action.flag { color: var(--amber); }
+.verdict-action.reject { color: var(--red); }
+.verdict-ruling { font-size: 13px; color: var(--text-dim); max-width: 600px; line-height: 1.5; }
+
+.verdict-right { display: flex; align-items: center; gap: 32px; }
+.verdict-score-block { text-align: center; }
+.verdict-score-num { font-size: 48px; font-weight: 700; font-family: var(--mono); line-height: 1; }
+.verdict-score-num.low { color: var(--green); }
+.verdict-score-num.med { color: var(--amber); }
+.verdict-score-num.high { color: var(--red); }
+.verdict-score-label { font-size: 10px; font-family: var(--mono); color: var(--text-dim); margin-top: 4px; letter-spacing: 1px; }
+
+.verdict-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.badge {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.badge.type { background: var(--red-glow); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.badge.conf { background: var(--cyan-glow); color: var(--cyan); border: 1px solid rgba(99,210,255,0.2); }
+.badge.green { background: var(--green-glow); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+
+/* Grid Cards */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+@media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(255,255,255,0.1); }
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.card-icon { font-size: 14px; color: var(--text-muted); }
+
+/* Signal Bars */
+.signal { margin-bottom: 16px; }
+.signal:last-child { margin-bottom: 0; }
+.signal-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 6px;
+}
+.signal-name { font-size: 12px; font-weight: 500; }
+.signal-val { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.signal-track { height: 4px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; }
+.signal-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+.signal-fill.green { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+.signal-fill.amber { background: var(--amber); box-shadow: 0 0 8px var(--amber-glow); }
+.signal-fill.red { background: var(--red); box-shadow: 0 0 8px var(--red-glow); }
+
+/* Debate */
+.debate-section { margin-bottom: 20px; }
+.debate-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.debate-card .debate-role {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: -24px;
+  background: var(--bg-card);
+  padding-top: 4px;
+}
+.debate-card.pros .debate-role { color: var(--red); }
+.debate-card.def .debate-role { color: var(--green); }
+.debate-body { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+
+/* Heatmaps */
+.heatmap-row { display: flex; gap: 12px; }
+.heatmap-item {
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.heatmap-item img { width: 100%; display: block; }
+.heatmap-label {
+  padding: 8px 12px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Metadata Table */
+.meta-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.meta-table tr { border-bottom: 1px solid var(--border); }
+.meta-table tr:last-child { border-bottom: none; }
+.meta-table td {
+  padding: 10px 0;
+  font-size: 12px;
+}
+.meta-table td:first-child {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  width: 140px;
+}
+
+/* Flags */
+.flag-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  border-left: 3px solid var(--amber);
+}
+.flag-item.clean { border-left-color: var(--green); }
+.flag-icon { font-size: 14px; }
+
+/* Export */
+.export-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.export-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.export-btn:hover { border-color: var(--cyan); background: var(--cyan-glow); }
+.export-btn.primary {
+  background: linear-gradient(135deg, var(--cyan), var(--cyan-deep));
+  border: none;
+  color: #fff;
+}
+.export-btn.primary:hover { box-shadow: 0 4px 20px var(--cyan-glow); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* Color Scheme for date inputs */
+input[type="date"] { color-scheme: dark; }
+select { color-scheme: dark; }
+
+.hidden { display: none !important; }
+</style>
 </head>
-<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<body>
 
-<!-- TopNavBar -->
-<nav class="fixed top-0 w-full border-b border-[#47484c]/15 bg-slate-950/80 backdrop-blur-xl z-40 flex justify-between items-center px-6 h-16 shadow-[0_4px_20px_rgba(0,229,255,0.05)]">
-    <div class="flex items-center gap-8">
-        <span class="text-xl font-bold tracking-tighter text-[#81ecff] drop-shadow-[0_0_8px_rgba(129,236,255,0.5)] font-headline">ARBITER_FORENSIC</span>
-        <div class="hidden md:flex gap-6 items-center">
-            <a class="font-manrope uppercase tracking-widest text-xs text-[#81ecff] border-b-2 border-[#81ecff] pb-1 duration-300 ease-out" href="#">Dashboard</a>
-            <a class="font-manrope uppercase tracking-widest text-xs text-slate-500 hover:text-[#81ecff] hover:bg-slate-800/50 transition-all duration-300 ease-out" href="#">Live_Feed</a>
+<!-- Header -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <div class="logo-text">Arbiter <span>/ forensic intelligence</span></div>
+  </div>
+  <div class="header-status">
+    <div class="status-pill">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">READY</span>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Upload Section -->
+  <section class="upload-section" id="upload-section">
+    <h1 class="upload-title">Forensic Claim Analysis</h1>
+    <p class="upload-sub">Upload a claim photo to run a 5-layer AI forensic pipeline. The system analyzes pixel manipulation, frequency fingerprints, metadata integrity, and uses an AI tribunal to reach a verdict.</p>
+
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <div class="drop-icon">📎</div>
+      <div>
+        <div class="drop-label">Upload claim evidence</div>
+        <div class="drop-hint">Drop an image or click to browse — JPG, PNG</div>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept="image/*" class="hidden">
+    <img class="preview-thumb" id="preview-thumb">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Incident Type</label>
+        <select id="incident-type">
+          <option value="collision">Collision</option>
+          <option value="rear_end">Rear-End</option>
+          <option value="side_impact">Side Impact</option>
+          <option value="rollover">Rollover</option>
+          <option value="vandalism">Vandalism</option>
+          <option value="flood">Flood</option>
+          <option value="fire">Fire</option>
+          <option value="hail">Hail</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Claim Date</label>
+        <input type="date" id="claim-date">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Location (optional)</label>
+        <input type="text" id="claim-location" placeholder="City or GPS coordinates">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="claim-text" placeholder="Brief incident description">
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" disabled>Analyze Claim</button>
+  </section>
+
+  <!-- Analysis Progress Bar -->
+  <div class="analysis-bar" id="analysis-bar">
+    <div class="analysis-label">
+      <span id="analysis-stage">INITIALIZING PIPELINE...</span>
+      <span id="analysis-pct">0%</span>
+    </div>
+    <div class="analysis-track">
+      <div class="analysis-fill" id="analysis-fill"></div>
+    </div>
+    <div class="analysis-steps">
+      <span id="s-pixel">PIXEL</span>
+      <span id="s-semantic">SEMANTIC</span>
+      <span id="s-temporal">TEMPORAL</span>
+      <span id="s-debate">TRIBUNAL</span>
+      <span id="s-verdict">VERDICT</span>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results" id="results">
+
+    <!-- Verdict Banner -->
+    <div class="verdict-banner" id="verdict-banner">
+      <div class="verdict-left">
+        <div class="verdict-label">Final Verdict</div>
+        <div class="verdict-action" id="v-action">—</div>
+        <div class="verdict-badges" id="v-badges"></div>
+        <div class="verdict-ruling" id="v-ruling"></div>
+      </div>
+      <div class="verdict-right">
+        <div class="verdict-score-block">
+          <div class="verdict-score-num" id="v-score">—</div>
+          <div class="verdict-score-label">RISK SCORE</div>
         </div>
+      </div>
     </div>
-    <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
-            <div class="text-right hidden sm:block">
-                <p class="text-[10px] font-label text-primary uppercase tracking-tighter leading-none">ANALYST_01</p>
-                <p class="text-[9px] font-label text-slate-500 uppercase">CLEARANCE: OMEGA</p>
-            </div>
-            <div class="w-8 h-8 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center text-primary material-symbols-outlined">shield_person</div>
+
+    <!-- Layer Signals + Visual Forensics -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Layer Analysis</div>
         </div>
-    </div>
-</nav>
-
-<!-- SideNavBar -->
-<aside class="fixed left-0 h-full w-64 border-r border-[#47484c]/15 bg-[#0d0e12] pt-20 pb-6 px-4 hidden md:flex flex-col z-30">
-    <div class="mb-8 px-2">
-        <div class="bg-surface-container-high p-3 rounded-lg flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
-            <div>
-                <p id="system-status-text" class="font-label text-[11px] font-medium text-on-surface">SYSTEM_READY</p>
-                <p class="font-label text-[9px] text-slate-500">ENGINE: V2_MISTRAL</p>
-            </div>
+        <div id="signals-container"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Visual Forensics</div>
         </div>
+        <div class="heatmap-row" id="heatmaps"></div>
+      </div>
     </div>
-    <nav class="flex-1 space-y-1">
-        <div class="px-3 py-2 text-slate-400 font-label text-[10px] tracking-widest uppercase mb-2 border-b border-outline-variant/20">Pipeline Stages</div>
-        <a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 transition-all font-label text-[11px] font-medium" id="nav-step-1">
-            <span class="material-symbols-outlined" data-icon="data_object">data_object</span> 1. Pixel/Hash
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 transition-all font-label text-[11px] font-medium" id="nav-step-2">
-            <span class="material-symbols-outlined" data-icon="image_search">image_search</span> 2. Semantic
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 transition-all font-label text-[11px] font-medium" id="nav-step-3">
-            <span class="material-symbols-outlined" data-icon="history">history</span> 3. Temporal
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 transition-all font-label text-[11px] font-medium" id="nav-step-4">
-            <span class="material-symbols-outlined" data-icon="gavel">gavel</span> 4. AI Tribunal
-        </a>
-        <a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 transition-all font-label text-[11px] font-medium" id="nav-step-5">
-            <span class="material-symbols-outlined" data-icon="fact_check">fact_check</span> 5. Final Verdict
-        </a>
-    </nav>
-    <div class="mt-auto space-y-4">
-        <button id="open-modal-btn" class="w-full bg-gradient-to-br from-[#81ecff] to-[#00e3fd] text-on-primary py-2.5 font-label text-[11px] font-bold tracking-widest hover:shadow-[0_0_15px_rgba(129,236,255,0.4)] transition-all">
-            INITIATE_SCAN
-        </button>
-    </div>
-</aside>
 
-<!-- Submit Modal -->
-<div id="submit-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md hidden">
-    <div class="glass-panel border border-primary/30 p-8 rounded-xl shadow-[0_0_40px_rgba(0,229,255,0.15)] w-full max-w-lg relative animate-in">
-        <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-primary material-symbols-outlined transition-colors">close</button>
-        <h2 class="font-headline text-2xl font-bold text-on-surface mb-2 tracking-tight">NEW_CASE_FILE</h2>
-        <p class="font-label text-[10px] text-slate-400 mb-6 uppercase tracking-widest border-b border-outline-variant/20 pb-4">Provide claim details and evidence</p>
-        
-        <div class="space-y-4">
-            <div id="modal-drop-zone" class="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center cursor-pointer hover:bg-primary/5 transition-colors relative" onclick="document.getElementById('file-input').click()">
-                <input type="file" id="file-input" accept="image/*" class="hidden">
-                <span class="material-symbols-outlined text-4xl text-primary mb-2 block" data-icon="upload_file">upload_file</span>
-                <p class="font-label text-xs text-primary font-bold">SELECT OR DROP EVIDENCE</p>
-                <p class="font-label text-[10px] text-slate-500 mt-1">JPG, PNG Supported</p>
-                
-                <div id="preview-container" class="hidden mt-4 relative w-full h-32 mx-auto rounded overflow-hidden border border-primary/50">
-                    <img id="preview-img" src="" class="w-full h-full object-cover">
-                    <div class="absolute bottom-0 inset-x-0 bg-primary/80 backdrop-blur text-on-primary py-1 font-label text-[8px] font-bold tracking-widest">EVIDENCE_LOADED</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-label text-[10px] text-slate-400 mb-1">INCIDENT TYPE</label>
-                    <select id="incident-type" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded p-2 text-slate-300 font-label text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                        <option value="collision">Collision</option>
-                        <option value="rear_end">Rear-End</option>
-                        <option value="side_impact">Side Impact</option>
-                        <option value="rollover">Rollover</option>
-                        <option value="vandalism">Vandalism</option>
-                    </select>
-                </div>
-                <div>
-                     <label class="block font-label text-[10px] text-slate-400 mb-1">CLAIM DATE</label>
-                     <input type="date" id="claim-date" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded p-2 text-slate-300 font-label text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none [color-scheme:dark]">
-                </div>
-            </div>
-
-            <div>
-                 <label class="block font-label text-[10px] text-slate-400 mb-1">LOCATION (OPTIONAL)</label>
-                 <input type="text" id="claim-location" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded p-2 text-slate-300 font-label text-xs focus:border-primary outline-none" placeholder="GPS or City">
-            </div>
-
-            <div>
-                 <label class="block font-label text-[10px] text-slate-400 mb-1">DESCRIPTION</label>
-                 <textarea id="claim-text" rows="2" class="w-full bg-surface-container-lowest border border-outline-variant/40 rounded p-2 text-slate-300 font-body text-sm focus:border-primary outline-none" placeholder="Incident details..."></textarea>
-            </div>
-            
-            <button id="submit-btn" class="w-full mt-4 border border-primary text-primary py-3 font-label text-[11px] font-bold tracking-widest hover:bg-primary/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase" disabled>
-                Awaiting Evidence
-            </button>
+    <!-- Debate -->
+    <div class="debate-section">
+      <div class="grid-2">
+        <div class="debate-card pros">
+          <div class="debate-role">⚖ Prosecution</div>
+          <div class="debate-body" id="d-pros"></div>
         </div>
+        <div class="debate-card def">
+          <div class="debate-role">🛡 Defense</div>
+          <div class="debate-body" id="d-def"></div>
+        </div>
+      </div>
     </div>
+
+    <!-- Flags + Metadata -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Forensic Flags</div>
+        </div>
+        <div id="flags-container"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Metadata</div>
+        </div>
+        <table class="meta-table" id="meta-table"></table>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="export-row">
+      <a class="export-btn primary" id="export-pdf" target="_blank">↓ Download PDF Report</a>
+      <button class="export-btn" onclick="resetUI()">+ New Analysis</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- Main Content Canvas -->
-<main class="md:ml-64 pt-20 p-6 min-h-screen bg-surface-dim relative">
-    <div class="max-w-[1600px] mx-auto grid grid-cols-12 gap-6 relative z-10">
-        
-        <!-- Header Section -->
-        <div class="col-span-12 flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2 initial-hide" id="dashboard-header">
-            <div>
-                <h1 class="text-3xl font-extrabold font-headline tracking-tight text-on-surface">CASE_FILE: <span id="ui-case-id" class="text-primary font-label tracking-tighter">AWAITING_INPUT</span></h1>
-                <div class="flex gap-4 mt-2" id="ui-tags-container">
-                    <!-- Dynamic badges populated via JS -->
-                </div>
-            </div>
-            <div class="flex gap-8">
-                <div class="text-right">
-                    <p class="font-label text-[10px] text-slate-500 uppercase">Analysis Engine</p>
-                    <p class="font-label text-lg font-bold text-primary">Mistral AI</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Left Analysis Column -->
-        <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
-            <!-- Target Status Card -->
-            <div id="ui-status-card" class="bg-surface-container p-6 rounded-lg border-l-4 shadow-2xl initial-hide">
-                <p class="font-label text-[11px] text-slate-500 mb-1">FORENSIC_STATUS</p>
-                <h2 id="ui-verdict" class="text-3xl font-headline font-black tracking-tighter mb-4">--</h2>
-                <div class="relative h-24 flex items-center justify-center">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div id="ui-score-ring" class="w-20 h-20 rounded-full border-4 border-surface-container-highest flex items-center justify-center rotate-45 transition-colors duration-1000">
-                            <span id="ui-score-val" class="text-xl font-black font-label -rotate-45 text-on-surface">--</span>
-                        </div>
-                    </div>
-                    <p class="absolute bottom-0 text-[10px] font-label uppercase tracking-widest font-bold">Fraud Score</p>
-                </div>
-                <p id="ui-verdict-reason" class="text-xs text-slate-400 mt-6 leading-relaxed border-t border-outline-variant/20 pt-4"></p>
-            </div>
-
-            <!-- ELA Heatmap Preview -->
-            <div class="bg-surface-container overflow-hidden rounded-lg initial-hide" id="ui-heatmap-card">
-                <div class="bg-surface-container-high px-4 py-2 border-b border-outline-variant/10 flex justify-between items-center">
-                    <span class="font-label text-[10px] font-bold text-slate-300">ELA_HEATMAP_PREVIEW</span>
-                    <span class="material-symbols-outlined text-primary text-sm">grid_view</span>
-                </div>
-                <div class="p-4">
-                    <div class="relative aspect-video bg-surface-container-lowest overflow-hidden group border border-outline-variant/30">
-                        <img id="ui-ela-image" class="w-full h-full object-cover opacity-80 mix-blend-screen" src="">
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Metadata Stream/Flags -->
-            <div class="flex-1 bg-surface-container rounded-lg flex flex-col initial-hide" id="ui-meta-card">
-                <div class="bg-surface-container-high px-4 py-2 flex justify-between items-center border-b border-outline-variant/10">
-                    <span class="font-label text-[10px] font-bold text-slate-300 uppercase">System_Flags</span>
-                    <span class="w-2 h-2 rounded-full bg-tertiary-dim animate-pulse"></span>
-                </div>
-                <div class="p-4 flex-1 font-label text-[10px] space-y-2 overflow-y-auto max-h-64" id="ui-flags-list">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Central Analysis (Scan) -->
-        <div class="col-span-12 lg:col-span-6 flex flex-col gap-6">
-            <div class="bg-surface-container relative overflow-hidden flex-1 rounded-lg border border-primary/20 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)] min-h-[500px]">
-                
-                <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
-                    <div class="flex items-center gap-2 bg-slate-950/60 backdrop-blur-md px-3 py-1.5 border border-primary/30">
-                        <span class="material-symbols-outlined text-primary text-sm">visibility</span>
-                        <span class="font-label text-[10px] font-bold text-on-surface uppercase tracking-widest">AI_Tribunal_Debate</span>
-                    </div>
-                </div>
-
-                <!-- Main Scan Visual for Idle/Loading state -->
-                <div id="ui-center-visual" class="absolute inset-0 flex items-center justify-center p-12 transition-opacity duration-500">
-                    <div class="relative w-full h-full flex items-center justify-center">
-                        <img class="w-full h-auto max-h-full object-contain mix-blend-screen opacity-50 drop-shadow-[0_0_20px_rgba(129,236,255,0.2)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJH9IxzykY5mcycl7Pr7dsQf02I9nNjH7gmS0GxCbmXrDdoKY03W53dUskz7CNVioK2tUXVAPI3278S940L3hsjQ3CTdWZ88R3iab2EzGttgDm6iXdhCffP7jeq-j_NUYO4WpfxHz3RcJ1WKU-A1BE1A0CLsj3_8LPkqyA76WaSd3TYbOGbpaZKXm7bq97MIHwjzNg6hZG-Eb2Eih3hnp7E0qxFVF1PQvB6rn07sHbyoQxO40HadhablBcNA3FlIxWQzAl3wu-LDs" alt="3D Scan">
-                        <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_40%,#0d0e12_95%)] pointer-events-none"></div>
-                        
-                        <!-- Radar scanning line (only shows while loading) -->
-                        <div id="ui-scan-line" class="absolute inset-0 overflow-hidden pointer-events-none hidden">
-                            <div class="w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent absolute animate-scan shadow-[0_0_20px_rgba(129,236,255,0.8)] filter blur-[1px]"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Debate Overlays (shown after results) -->
-                <div id="ui-debate-overlay" class="absolute inset-0 z-20 flex flex-col p-6 gap-4 initial-hide hidden overflow-y-auto">
-                    <!-- Prosecution -->
-                    <div class="bg-surface-container-high/90 backdrop-blur-md border-l-2 border-error p-4 rounded-r shadow-lg max-w-lg max-h-[45%] overflow-y-auto">
-                        <div class="font-label text-[10px] text-error font-bold mb-2 tracking-widest flex items-center gap-2 sticky top-0 bg-surface-container-high/90 pb-2">
-                            <span class="material-symbols-outlined text-[14px]">gavel</span> PROSECUTION_ARGUMENT
-                        </div>
-                        <p id="ui-debate-pros" class="text-xs text-slate-300 leading-relaxed"></p>
-                    </div>
-                    <!-- Defense -->
-                    <div class="bg-surface-container-high/90 backdrop-blur-md border-l-2 border-tertiary p-4 rounded-r shadow-lg max-w-lg self-end max-h-[45%] overflow-y-auto">
-                        <div class="font-label text-[10px] text-tertiary font-bold mb-2 tracking-widest flex items-center gap-2 sticky top-0 bg-surface-container-high/90 pb-2">
-                            <span class="material-symbols-outlined text-[14px]">shield</span> DEFENSE_ARGUMENT
-                        </div>
-                        <p id="ui-debate-def" class="text-xs text-slate-300 leading-relaxed"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column (Signals & Log) -->
-        <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
-            <!-- Layers Breakdown -->
-            <div class="bg-surface-container rounded-lg p-4 flex-1 initial-hide" id="ui-signals-card">
-                <h3 class="font-label text-[10px] font-bold text-slate-300 uppercase mb-4 tracking-widest border-b border-outline-variant/20 pb-2">Forensic_Layers</h3>
-                <div class="space-y-4 mt-2" id="ui-signals-list">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-
-            <!-- Export CTA -->
-            <div class="bg-primary/5 border border-primary/20 p-6 rounded-lg text-center initial-hide" id="ui-export-card">
-                <p class="font-label text-[10px] text-primary uppercase tracking-widest mb-4">Complete Investigation</p>
-                <a id="ui-export-btn" target="_blank" href="#" class="block w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold font-label text-xs tracking-widest uppercase hover:shadow-[0_0_20px_rgba(129,236,255,0.4)] transition-all">
-                    DOWNLOAD PDF REPORT
-                </a>
-                <p class="font-label text-[8px] text-slate-500 mt-4 italic">SHA-512 Secured Export</p>
-            </div>
-        </div>
-    </div>
-</main>
-
 <script>
-    const API = 'http://localhost:8000';
-    let selectedFile = null;
+const API = 'http://localhost:8000';
+let selectedFile = null;
 
-    // Elements
-    const modalBtn = document.getElementById('open-modal-btn');
-    const modalClose = document.getElementById('close-modal-btn');
-    const modal = document.getElementById('submit-modal');
-    const fileInput = document.getElementById('file-input');
-    const previewContainer = document.getElementById('preview-container');
-    const previewImg = document.getElementById('preview-img');
-    const submitBtn = document.getElementById('submit-btn');
-    
-    // UI Panels to reveal
-    const uiElements = [
-        'dashboard-header', 'ui-status-card', 'ui-heatmap-card', 'ui-meta-card',
-        'ui-signals-card', 'ui-export-card'
-    ];
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const preview = document.getElementById('preview-thumb');
+const submitBtn = document.getElementById('submit-btn');
 
-    // Modal behavior
-    modalBtn.addEventListener('click', () => { modal.classList.remove('hidden'); });
-    modalClose.addEventListener('click', () => { modal.classList.add('hidden'); });
+// File handling
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('active');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
 
-    fileInput.addEventListener('change', e => {
-        if(e.target.files[0]) {
-            selectedFile = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = e => {
-                previewImg.src = e.target.result;
-                previewContainer.classList.remove('hidden');
-                submitBtn.disabled = false;
-                submitBtn.classList.add('bg-primary', 'text-on-primary');
-                submitBtn.classList.remove('border', 'text-primary');
-                submitBtn.textContent = 'COMMENCE_FORENSIC_ANALYSIS';
-            };
-            reader.readAsDataURL(selectedFile);
-        }
-    });
+function handleFile(file) {
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  submitBtn.disabled = false;
+}
 
-    // Sidebar pipeline UI updater
-    function updatePipelineUI(stepIdx, status) {
-        for(let i=1; i<=5; i++){
-            const el = document.getElementById('nav-step-'+i);
-            if(i < stepIdx) {
-                el.classList.add('text-primary', 'opacity-100');
-                el.classList.remove('text-slate-400', 'animate-pulse');
-            } else if (i === stepIdx) {
-                el.classList.add('text-secondary', 'animate-pulse', 'opacity-100');
-                el.classList.remove('text-slate-400');
-            }
-        }
+// Progress animation
+const stages = ['PIXEL FORENSICS', 'SEMANTIC ANALYSIS', 'TEMPORAL CHECK', 'AI TRIBUNAL', 'VERDICT ENGINE'];
+const stageEls = ['s-pixel', 's-semantic', 's-temporal', 's-debate', 's-verdict'];
+let progressInterval = null;
+let progressVal = 0;
+
+function startProgress() {
+  const bar = document.getElementById('analysis-bar');
+  const fill = document.getElementById('analysis-fill');
+  bar.classList.add('active');
+  progressVal = 0;
+  let stageIdx = 0;
+  progressInterval = setInterval(() => {
+    progressVal = Math.min(progressVal + 1.5, 92);
+    fill.style.width = progressVal + '%';
+    document.getElementById('analysis-pct').textContent = Math.round(progressVal) + '%';
+    const newIdx = Math.min(Math.floor(progressVal / 20), 4);
+    if (newIdx !== stageIdx) {
+      stageIdx = newIdx;
+      document.getElementById('analysis-stage').textContent = stages[stageIdx] + '...';
+      for (let i = 0; i < stageEls.length; i++) {
+        const el = document.getElementById(stageEls[i]);
+        el.className = i < stageIdx ? 'done' : i === stageIdx ? 'active' : '';
+      }
     }
+  }, 100);
+}
 
-    submitBtn.addEventListener('click', async () => {
-        if(!selectedFile) return;
+function finishProgress() {
+  clearInterval(progressInterval);
+  const fill = document.getElementById('analysis-fill');
+  fill.style.width = '100%';
+  document.getElementById('analysis-pct').textContent = '100%';
+  document.getElementById('analysis-stage').textContent = 'COMPLETE';
+  stageEls.forEach(id => document.getElementById(id).className = 'done');
+  setTimeout(() => {
+    document.getElementById('analysis-bar').classList.remove('active');
+  }, 600);
+}
 
-        // Start loading sequence
-        modal.classList.add('hidden');
-        document.getElementById('system-status-text').textContent = 'ANALYZING_EVIDENCE';
-        document.getElementById('system-status-text').classList.add('text-secondary', 'animate-pulse');
-        document.getElementById('ui-scan-line').classList.remove('hidden');
-        document.getElementById('ui-center-visual').classList.remove('opacity-50');
-        document.getElementById('ui-center-visual').classList.add('opacity-100');
-        
-        // Hide previous results if any
-        uiElements.forEach(id => document.getElementById(id).classList.remove('show-data'));
-        document.getElementById('ui-debate-overlay').classList.add('hidden');
+// Submit
+submitBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
 
-        // Fake progression for the sidebar
-        let pStep = 1;
-        const pInterval = setInterval(() => { updatePipelineUI(pStep); pStep = Math.min(pStep+1, 5); }, 800);
+  document.getElementById('upload-section').classList.add('collapsed');
+  document.getElementById('results').classList.remove('active');
+  startProgress();
+  document.getElementById('status-text').textContent = 'ANALYZING';
+  document.getElementById('status-dot').style.background = 'var(--amber)';
+  document.getElementById('status-dot').style.boxShadow = '0 0 8px var(--amber)';
 
-        const formData = new FormData();
-        formData.append('image', selectedFile);
-        formData.append('claim_text', document.getElementById('claim-text').value);
-        formData.append('incident_type', document.getElementById('incident-type').value);
-        formData.append('claim_date', document.getElementById('claim-date').value);
-        formData.append('claim_location', document.getElementById('claim-location').value);
+  const fd = new FormData();
+  fd.append('image', selectedFile);
+  fd.append('claim_text', document.getElementById('claim-text').value || 'Auto claim submission');
+  fd.append('incident_type', document.getElementById('incident-type').value);
+  fd.append('claim_date', document.getElementById('claim-date').value);
+  fd.append('claim_location', document.getElementById('claim-location').value);
 
-        try {
-            const resp = await fetch(`${API}/analyze`, { method: 'POST', body: formData });
-            if (!resp.ok) throw new Error(await resp.text());
-            const data = await resp.json();
-            
-            clearInterval(pInterval);
-            updatePipelineUI(6); // Finish all
-            
-            // Build UI
-            renderResults(data);
+  try {
+    const resp = await fetch(`${API}/analyze`, { method: 'POST', body: fd });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    finishProgress();
+    setTimeout(() => renderResults(data), 400);
+  } catch (err) {
+    clearInterval(progressInterval);
+    document.getElementById('analysis-bar').classList.remove('active');
+    alert('Analysis failed: ' + err.message + '\n\nEnsure the backend is running on localhost:8000');
+    resetUI();
+  } finally {
+    document.getElementById('status-text').textContent = 'READY';
+    document.getElementById('status-dot').style.background = 'var(--green)';
+    document.getElementById('status-dot').style.boxShadow = '0 0 8px var(--green)';
+  }
+});
 
-        } catch(err) {
-            clearInterval(pInterval);
-            alert('Analysis failed: ' + err.message);
-        } finally {
-            document.getElementById('system-status-text').textContent = 'SYSTEM_READY';
-            document.getElementById('system-status-text').classList.remove('text-secondary', 'animate-pulse');
-            document.getElementById('ui-scan-line').classList.add('hidden');
-            document.getElementById('ui-center-visual').classList.remove('opacity-100');
-            document.getElementById('ui-center-visual').classList.add('opacity-30');
-            
-            // Reset button
-            submitBtn.textContent = 'Awaiting Evidence';
-            submitBtn.disabled = true;
-            submitBtn.classList.remove('bg-primary', 'text-on-primary');
-            submitBtn.classList.add('border', 'text-primary');
-            selectedFile = null;
-            previewContainer.classList.add('hidden');
-            fileInput.value = '';
-        }
-    });
+function scoreColor(s) {
+  if (s >= 0.75) return 'red';
+  if (s >= 0.40) return 'amber';
+  return 'green';
+}
 
-    function getTheme(score) {
-        if(score >= 0.75) return { name: 'error', color: '#ff716c' }; // High
-        if(score >= 0.45) return { name: 'secondary', color: '#cfe6f2' }; // Amber
-        return { name: 'tertiary', color: '#c3ffcd' }; // Authentic
-    }
+function renderResults(data) {
+  const v = data.verdict;
+  const sc = data.layer_scores;
+  const deb = data.debate;
+  const cls = v.action === 'AUTO_APPROVE' ? 'approve' : v.action === 'FLAG' ? 'flag' : 'reject';
+  const scoreCls = scoreColor(v.risk_score);
 
-    function renderResults(data) {
-        const v = data.verdict;
-        const sc = data.layer_scores;
-        const deb = data.debate;
-        const primaryTheme = getTheme(v.risk_score);
+  // Verdict banner
+  const banner = document.getElementById('verdict-banner');
+  banner.className = 'verdict-banner ' + cls;
+  document.getElementById('v-action').className = 'verdict-action ' + cls;
+  document.getElementById('v-action').textContent = v.action === 'AUTO_APPROVE' ? 'APPROVED' : v.action;
+  document.getElementById('v-score').className = 'verdict-score-num ' + scoreCls;
+  document.getElementById('v-score').textContent = v.risk_score_percent + '%';
+  document.getElementById('v-ruling').textContent = v.ruling;
+  document.getElementById('v-badges').innerHTML = `
+    <span class="badge ${scoreCls === 'red' ? 'type' : 'green'}">${v.fraud_type}</span>
+    <span class="badge conf">CONFIDENCE ${Math.round(v.confidence * 100)}%</span>
+  `;
 
-        // Header
-        document.getElementById('ui-case-id').textContent = data.claim_id;
-        document.getElementById('ui-tags-container').innerHTML = `
-            <span class="px-2 py-0.5 bg-surface-container-high text-${primaryTheme.name} font-label text-[10px] tracking-wider border border-${primaryTheme.name}/20">${v.fraud_type}</span>
-            <span class="px-2 py-0.5 bg-surface-container-high text-slate-400 font-label text-[10px] tracking-wider border border-outline-variant/20">CONFIDENCE: ${Math.round(v.confidence*100)}%</span>
-        `;
+  // Signals
+  const sigs = [
+    { n: 'ELA — Pixel Manipulation', s: sc.ela?.fraud_score || 0, l: sc.ela?.label },
+    { n: 'FFT — Frequency Fingerprint', s: sc.fft?.fraud_score || 0, l: sc.fft?.generator_type },
+    { n: 'pHash — Duplicate Check', s: sc.phash?.fraud_score || 0, l: sc.phash?.label },
+    { n: 'SAM — Damage Severity', s: (sc.sam?.severity_percent || 0) / 100, l: sc.sam?.severity_class },
+    { n: 'Temporal — Metadata', s: sc.temporal?.fraud_score || 0, l: sc.temporal?.label },
+  ];
+  document.getElementById('signals-container').innerHTML = sigs.map(s => {
+    const c = scoreColor(s.s);
+    const w = Math.round(s.s * 100);
+    return `<div class="signal">
+      <div class="signal-header">
+        <span class="signal-name">${s.n}</span>
+        <span class="signal-val" style="color:var(--${c})">${w}%</span>
+      </div>
+      <div class="signal-track"><div class="signal-fill ${c}" style="width:${w}%"></div></div>
+    </div>`;
+  }).join('');
 
-        // Card 1: Status
-        document.getElementById('ui-verdict').textContent = v.action === 'AUTO_APPROVE' ? 'AUTHENTIC' : v.action;
-        document.getElementById('ui-verdict').classList.add(`text-${primaryTheme.name}`);
-        document.getElementById('ui-score-val').textContent = v.risk_score_percent + '%';
-        let borderColorClass = '';
-        if(primaryTheme.name === 'error') borderColorClass = 'border-t-error shadow-[0_0_20px_rgba(255,113,108,0.2)]';
-        else if(primaryTheme.name === 'secondary') borderColorClass = 'border-t-secondary shadow-[0_0_20px_rgba(207,230,242,0.2)]';
-        else borderColorClass = 'border-t-tertiary shadow-[0_0_20px_rgba(195,255,205,0.2)]';
-        document.getElementById('ui-score-ring').className = `w-20 h-20 rounded-full border-4 border-surface-container-highest flex items-center justify-center rotate-45 transition-colors duration-1000 ${borderColorClass}`;
-        document.getElementById('ui-status-card').className = `bg-surface-container p-6 rounded-lg border-l-4 border-${primaryTheme.name} shadow-2xl relative z-10`;
-        document.getElementById('ui-verdict-reason').textContent = v.ruling;
+  // Heatmaps
+  const heatmaps = [];
+  if (sc.ela?.heatmap_b64) heatmaps.push({ label: 'ELA Heatmap', src: 'data:image/png;base64,' + sc.ela.heatmap_b64 });
+  if (sc.fft?.spectrum_b64) heatmaps.push({ label: 'FFT Spectrum', src: 'data:image/png;base64,' + sc.fft.spectrum_b64 });
+  if (sc.sam?.overlay_b64) heatmaps.push({ label: 'Damage Overlay', src: 'data:image/png;base64,' + sc.sam.overlay_b64 });
+  document.getElementById('heatmaps').innerHTML = heatmaps.length
+    ? heatmaps.map(h => `<div class="heatmap-item"><img src="${h.src}" alt="${h.label}"><div class="heatmap-label">${h.label}</div></div>`).join('')
+    : '<p style="color:var(--text-dim);font-size:12px">No visual forensics generated</p>';
 
-        // Visual Forensics
-        if(sc.ela && sc.ela.heatmap_b64) {
-            document.getElementById('ui-ela-image').src = `data:image/png;base64,${sc.ela.heatmap_b64}`;
-        } else if (sc.sam && sc.sam.overlay_b64) {
-            document.getElementById('ui-ela-image').src = `data:image/png;base64,${sc.sam.overlay_b64}`;
-        }
+  // Debate
+  document.getElementById('d-pros').textContent = deb?.prosecutor?.arguments || 'No prosecution arguments available.';
+  document.getElementById('d-def').textContent = deb?.defender?.arguments || 'No defense arguments available.';
 
-        // Flags Stream
-        const allFlags = [];
-        if(sc.temporal?.flags) sc.temporal.flags.forEach(f => allFlags.push({t: 'TEMPORAL', msg: f, c: 'secondary'}));
-        if(sc.phash?.matched_claim) allFlags.push({t: 'DUP_HASH', msg: 'MATCH ID ' + sc.phash.matched_claim, c: 'error'});
-        if(sc.fft?.generator_type !== 'NATURAL_CAMERA') allFlags.push({t: 'AI_FFT', msg: sc.fft.generator_type, c: 'error'});
-        if(allFlags.length === 0) allFlags.push({t: 'SYSTEM', msg: 'NO ANOMALIES DETECTED', c: 'tertiary'});
+  // Flags
+  const allFlags = [];
+  if (sc.temporal?.flags) sc.temporal.flags.forEach(f => allFlags.push(f));
+  if (sc.phash?.matched_claim) allFlags.push('Duplicate image: matches claim ' + sc.phash.matched_claim);
+  if (sc.fft?.generator_type && sc.fft.generator_type !== 'NATURAL_CAMERA') allFlags.push('Generator detected: ' + sc.fft.generator_type);
+  document.getElementById('flags-container').innerHTML = allFlags.length
+    ? allFlags.map(f => `<div class="flag-item"><span class="flag-icon">⚠</span>${f}</div>`).join('')
+    : '<div class="flag-item clean"><span class="flag-icon">✓</span>No forensic flags detected</div>';
 
-        document.getElementById('ui-flags-list').innerHTML = allFlags.map(f => `
-            <div class="flex gap-2 mb-2 p-2 bg-surface-container-high/50 rounded border-l-2 border-${f.c}">
-                <span class="text-${f.c} shrink-0">[${f.t}]</span>
-                <span class="text-slate-300">${f.msg}</span>
-            </div>
-        `).join('');
+  // Metadata
+  const t = sc.temporal?.raw_exif_summary || {};
+  document.getElementById('meta-table').innerHTML = `
+    <tr><td>CASE ID</td><td style="font-family:var(--mono);font-size:11px">${data.claim_id}</td></tr>
+    <tr><td>TIMESTAMP</td><td>${new Date(data.timestamp).toLocaleString()}</td></tr>
+    <tr><td>EXIF DATA</td><td style="color:var(--${t.has_exif ? 'green' : 'amber'})">${t.has_exif ? 'Present' : 'Not found'}</td></tr>
+    <tr><td>GPS</td><td style="color:var(--${t.has_gps ? 'green' : 'text-dim'})">${t.has_gps ? 'Available' : 'N/A'}</td></tr>
+    <tr><td>CAMERA</td><td>${t.camera || 'Unknown'}</td></tr>
+    <tr><td>SOFTWARE</td><td>${t.software || 'None'}</td></tr>
+    <tr><td>CAPTURE TIME</td><td>${t.capture_time || 'Unavailable'}</td></tr>
+  `;
 
-        // Layer Data
-        const sigs = [
-            {n: 'ELA (Pixels)', s: sc.ela?.fraud_score || 0},
-            {n: 'FFT (Freq)', s: sc.fft?.fraud_score || 0},
-            {n: 'pHASH (Dupe)', s: sc.phash?.matched_claim ? 1.0 : 0.0},
-            {n: 'SAM (Semantic)', s: (sc.sam?.severity_percent || 0)/100},
-            {n: 'Temporal Data', s: sc.temporal?.fraud_score || 0}
-        ];
-        document.getElementById('ui-signals-list').innerHTML = sigs.map(s => {
-            const stm = getTheme(s.s);
-            const w = Math.round(s.s * 100);
-            return `
-            <div class="mb-3">
-                <div class="flex justify-between font-label text-[10px] mb-1">
-                    <span class="text-slate-300">${s.n}</span>
-                    <span class="text-${stm.name}">${w}%</span>
-                </div>
-                <div class="w-full bg-surface-container-highest h-1 rounded overflow-hidden">
-                    <div class="bg-${stm.name} h-full" style="width:${w}%"></div>
-                </div>
-            </div>`;
-        }).join('');
+  // Export
+  document.getElementById('export-pdf').href = `${API}/report/${data.claim_id}`;
 
-        // Debate Overlay
-        if(deb && deb.prosecutor) {
-            document.getElementById('ui-debate-overlay').classList.remove('hidden');
-            document.getElementById('ui-debate-pros').textContent = deb.prosecutor.arguments;
-            document.getElementById('ui-debate-def').textContent = deb.defender.arguments;
-        }
+  // Show results
+  document.getElementById('results').classList.add('active');
+}
 
-        // Setup PDF export
-        document.getElementById('ui-export-btn').href = `${API}/report/${data.claim_id}`;
-
-        // Cascade reveal
-        uiElements.forEach((id, idx) => {
-            setTimeout(() => {
-                document.getElementById(id).classList.add('show-data');
-            }, idx * 150 + 100);
-        });
-        setTimeout(() => {
-            document.getElementById('ui-debate-overlay').classList.add('show-data');
-        }, uiElements.length * 150 + 300);
-    }
+function resetUI() {
+  document.getElementById('upload-section').classList.remove('collapsed');
+  document.getElementById('results').classList.remove('active');
+  selectedFile = null;
+  fileInput.value = '';
+  preview.style.display = 'none';
+  submitBtn.disabled = true;
+}
 </script>
 </body>
 </html>
