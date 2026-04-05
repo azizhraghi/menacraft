@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vendix | Forensic Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#2d424c",
+                        "on-secondary-fixed-variant": "#495f69",
+                        "tertiary-dim": "#5bef90",
+                        "surface-container-low": "#121318",
+                        "on-error-container": "#ffa8a3",
+                        "on-error": "#490006",
+                        "secondary": "#cfe6f2",
+                        "inverse-primary": "#006976",
+                        "on-surface-variant": "#abaab0",
+                        "primary-dim": "#00d4ec",
+                        "surface-container": "#18191e",
+                        "secondary-fixed-dim": "#c1d8e4",
+                        "surface-variant": "#24252b",
+                        "primary-fixed": "#00e3fd",
+                        "on-primary-fixed": "#003840",
+                        "error": "#ff716c",
+                        "inverse-surface": "#faf8fe",
+                        "error-container": "#9f0519",
+                        "outline-variant": "#47484c",
+                        "on-tertiary": "#006834",
+                        "on-surface": "#faf8fe",
+                        "surface-tint": "#81ecff",
+                        "primary": "#81ecff",
+                        "on-primary-container": "#004d57",
+                        "on-primary-fixed-variant": "#005762",
+                        "surface": "#0d0e12",
+                        "on-background": "#faf8fe",
+                        "tertiary-fixed-dim": "#5bef90",
+                        "secondary-dim": "#c1d8e4",
+                        "primary-fixed-dim": "#00d4ec",
+                        "on-secondary-container": "#bdd4e0",
+                        "surface-container-lowest": "#000000",
+                        "surface-container-high": "#1e1f25",
+                        "primary-container": "#00e3fd",
+                        "outline": "#75757a",
+                        "error-dim": "#d7383b",
+                        "on-tertiary-fixed": "#004a23",
+                        "background": "#0d0e12",
+                        "secondary-container": "#354a53",
+                        "tertiary-container": "#6bfe9c",
+                        "surface-container-highest": "#24252b",
+                        "secondary-fixed": "#cfe6f2",
+                        "on-secondary": "#40555f",
+                        "on-primary": "#005762",
+                        "tertiary-fixed": "#6bfe9c",
+                        "inverse-on-surface": "#54555a",
+                        "tertiary": "#c3ffcd",
+                        "on-tertiary-fixed-variant": "#006a35",
+                        "surface-dim": "#0d0e12",
+                        "on-tertiary-container": "#005f2f",
+                        "surface-bright": "#2a2c32"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(30, 31, 37, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .scan-line {
+            background: linear-gradient(to bottom, transparent, #81ecff, transparent);
+            height: 100%;
+            width: 2px;
+            position: absolute;
+            left: 50%;
+            opacity: 0.3;
+        }
+        .tonal-shift {
+            background: linear-gradient(135deg, #18191e 0%, #121318 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full border-b border-[#47484c]/15 bg-slate-950/80 backdrop-blur-xl z-50 flex justify-between items-center px-6 h-16 shadow-[0_4px_20px_rgba(0,229,255,0.05)]">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#81ecff] drop-shadow-[0_0_8px_rgba(129,236,255,0.5)] font-headline">FORENSIC_INTELLIGENCE</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-manrope uppercase tracking-widest text-xs text-[#81ecff] border-b-2 border-[#81ecff] pb-1 duration-300 ease-out" href="#">Dashboard</a>
+<a class="font-manrope uppercase tracking-widest text-xs text-slate-500 hover:text-[#81ecff] hover:bg-slate-800/50 transition-all duration-300 ease-out" href="#">Live_Feed</a>
+<a class="font-manrope uppercase tracking-widest text-xs text-slate-500 hover:text-[#81ecff] hover:bg-slate-800/50 transition-all duration-300 ease-out" href="#">Archived_Cases</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-[#81ecff] transition-colors" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-[#81ecff] transition-colors" data-icon="notifications">notifications</span>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+<div class="text-right hidden sm:block">
+<p class="text-[10px] font-label text-primary uppercase tracking-tighter leading-none">ANALYST_01</p>
+<p class="text-[9px] font-label text-slate-500 uppercase">CLEARANCE: OMEGA</p>
+</div>
+<img alt="User analyst avatar" class="w-8 h-8 rounded-full border border-primary/30" data-alt="Close-up portrait of a digital forensics analyst in a dark room with blue screen light reflecting on their face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8UCixFp6UYMGkv4oVlWVAHhnisjfVW-gkF5eWzJb4emuqFuZnILK_N8avT2JB80L9A1UEeb91qtFyVDDOHFp4t0UVgkJ05Ko5GPrv9umtPJ96QDv2oUnMWg37IOE1tvamAE3c_EqkgFsuD-0xUp7Ok-nasocV0R09kP6ap-HNVoHkg9ZvjFgLaYAUgD0LJpbpbFk4GjsiHV2JclCkJZC2UWSQqYWoO5if_fYSbLypq5ArGphp-iJ_7NM9SeQMxGbVaW7SAIcvhaU"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 h-full w-64 border-r border-[#47484c]/15 bg-[#0d0e12] pt-20 pb-6 px-4 hidden md:flex flex-col z-40">
+<div class="mb-8 px-2">
+<div class="bg-surface-container-high p-3 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<div>
+<p class="font-label text-[11px] font-medium text-on-surface">SYSTEM_CORE_V2</p>
+<p class="font-label text-[9px] text-slate-500">LATENCY: 14MS</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#81ecff] bg-[#81ecff]/10 border-l-4 border-[#81ecff] font-label text-[11px] font-medium transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="data_object">data_object</span> Metadata
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span> Face_ID
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="equalizer">equalizer</span> Audio_Spectrum
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="biometric_setup">android_fingerprint</span> Deepfake_Scan
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span> Geolocate
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span> Export
+            </a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full bg-gradient-to-br from-[#81ecff] to-[#00e3fd] text-on-primary py-2.5 font-label text-[11px] font-bold tracking-widest hover:shadow-[0_0_15px_rgba(129,236,255,0.4)] transition-all">
+                INITIATE_SCAN
+            </button>
+<div class="pt-4 border-t border-outline-variant/10 space-y-1">
+<a class="flex items-center gap-3 px-3 py-1.5 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span> System_Logs
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-slate-400 opacity-70 hover:bg-[#1e1f25] hover:opacity-100 transition-all font-label text-[11px] font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="help_outline">help_outline</span> Help
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-20 p-6 min-h-screen bg-surface-dim">
+<div class="max-w-[1600px] mx-auto grid grid-cols-12 gap-6">
+<!-- Header Section -->
+<div class="col-span-12 flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
+<div>
+<h1 class="text-3xl font-extrabold font-headline tracking-tight text-on-surface">CASE_FILE: <span class="text-primary">VX-9902-TRX</span></h1>
+<div class="flex gap-4 mt-2">
+<span class="px-2 py-0.5 bg-tertiary/10 text-tertiary font-label text-[10px] tracking-wider border border-tertiary/20">BLOCKCHAIN_VERIFIED</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary font-label text-[10px] tracking-wider border border-primary/20">OBJECT_ID: VEHICLE_772</span>
+</div>
+</div>
+<div class="flex gap-8">
+<div class="text-right">
+<p class="font-label text-[10px] text-slate-500 uppercase">System Latency</p>
+<p class="font-label text-lg font-bold text-primary">0.024 MS</p>
+</div>
+<div class="text-right">
+<p class="font-label text-[10px] text-slate-500 uppercase">Encryption</p>
+<p class="font-label text-lg font-bold text-tertiary">AES-256</p>
+</div>
+</div>
+</div>
+<!-- Left Analysis Column -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+<!-- Forensic Status Card -->
+<div class="bg-surface-container p-6 rounded-lg border-l-4 border-error shadow-2xl">
+<p class="font-label text-[11px] text-slate-500 mb-1">FORENSIC_STATUS</p>
+<h2 class="text-3xl font-headline font-black text-error tracking-tighter mb-4">SUSPICIOUS</h2>
+<div class="relative h-24 flex items-center justify-center">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-20 h-20 rounded-full border-4 border-surface-container-highest border-t-error flex items-center justify-center rotate-45 shadow-[0_0_20px_rgba(255,113,108,0.2)]">
+<span class="text-xl font-black font-label -rotate-45 text-on-surface">72%</span>
+</div>
+</div>
+<p class="absolute bottom-0 text-[10px] font-label text-error uppercase tracking-widest font-bold">Fraud Score</p>
+</div>
+</div>
+<!-- ELA Heatmap Preview -->
+<div class="bg-surface-container overflow-hidden rounded-lg">
+<div class="bg-surface-container-high px-4 py-2 border-b border-outline-variant/10 flex justify-between items-center">
+<span class="font-label text-[10px] font-bold text-slate-300">ELA_HEATMAP_PREVIEW</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="grid_view">grid_view</span>
+</div>
+<div class="p-4">
+<div class="relative aspect-video bg-surface-container-lowest overflow-hidden group">
+<img alt="Forensic ELA heatmap of vehicle door" class="w-full h-full object-cover opacity-60" data-alt="Technical Error Level Analysis heatmap showing a car door with glowing white noise and color distortions in deep blue and neon violet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDu8ML8l5uJp6ySAxSywqM_TyY6mHLh4khsGlZBFuzAwAd8zLOfHkJCq1vbAS2dmsLsyfR0yExnG2kjufybBQJTPP0nLVwWhqHP-n-mqCi6myYvD7Y6xN6pIgu_6Lm_EadlfikI_ygAS3EaJBm6y4UwHJoFGbQMx1Gc8UXjmn-KesLmTdhSo8Z8-PAZmXwv4XU8gEVBGoxAAIeEoCOlkzq9UEwcM5xDKtmChhtPiQtLqjxFcFCCZJcuDYmVY4U1_Ex7BUekE0eMpA"/>
+<div class="absolute inset-0 bg-error/20 mix-blend-overlay"></div>
+<div class="absolute top-2 left-2 px-1.5 py-0.5 bg-error text-on-error font-label text-[9px] font-bold">CLONE_DETECTED</div>
+</div>
+<div class="mt-4 grid grid-cols-2 gap-2">
+<div class="bg-surface-container-highest p-2">
+<p class="font-label text-[9px] text-slate-500">RES_X</p>
+<p class="font-label text-[11px] text-on-surface">3840 PX</p>
+</div>
+<div class="bg-surface-container-highest p-2">
+<p class="font-label text-[9px] text-slate-500">BITRATE</p>
+<p class="font-label text-[11px] text-on-surface">42.8 MB/S</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Metadata Logs -->
+<div class="flex-1 bg-surface-container rounded-lg flex flex-col">
+<div class="bg-surface-container-high px-4 py-2 flex justify-between items-center">
+<span class="font-label text-[10px] font-bold text-slate-300 uppercase">Metadata_Stream</span>
+<span class="w-2 h-2 rounded-full bg-tertiary-dim animate-pulse"></span>
+</div>
+<div class="p-4 flex-1 font-label text-[10px] text-slate-400 space-y-2 overflow-y-auto max-h-64 scrollbar-hide">
+<div class="flex gap-2">
+<span class="text-primary shrink-0">[14:02:11]</span>
+<span>HASH_MATCH: CRC-32_0x44A1_F3...</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary shrink-0">[14:02:12]</span>
+<span>NODE_VERIFY: OK [TX: 9x822..]</span>
+</div>
+<div class="flex gap-2">
+<span class="text-error shrink-0">[14:02:15]</span>
+<span class="text-error">SUSP_LAYER: IN_PAINT_DETECTED_A2</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary shrink-0">[14:02:18]</span>
+<span>GPS_LOCK: 34.0522 N, 118.2437 W</span>
+</div>
+<div class="flex gap-2">
+<span class="text-slate-500 shrink-0">[14:02:22]</span>
+<span>ISO_CALIBRATION: 800_UNITY</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary shrink-0">[14:02:25]</span>
+<span>LENS_ID: SONY_FE_35mm_F1.4</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Central Analysis (X-Ray Scan) -->
+<div class="col-span-12 lg:col-span-6 flex flex-col gap-6">
+<div class="bg-surface-container relative overflow-hidden flex-1 rounded-lg border border-primary/10 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]">
+<!-- Scan HUD UI -->
+<div class="absolute top-4 left-4 flex flex-col gap-2 z-10">
+<div class="flex items-center gap-2 bg-slate-950/60 backdrop-blur-md px-3 py-1.5 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="visibility">visibility</span>
+<span class="font-label text-[10px] font-bold text-on-surface uppercase tracking-widest">3D_XRAY_WIRE</span>
+</div>
+</div>
+<div class="absolute top-4 right-4 z-10">
+<div class="bg-slate-950/60 backdrop-blur-md px-3 py-1.5 border border-primary/20">
+<span class="font-label text-[10px] font-bold text-on-surface">V: 2.0.4.19</span>
+</div>
+</div>
+<!-- Main Scan Visual -->
+<div class="absolute inset-0 flex items-center justify-center p-12">
+<div class="relative w-full h-full flex items-center justify-center">
+<img alt="Technical 3D wireframe car scan" class="w-full h-auto max-h-full object-contain mix-blend-screen opacity-90 drop-shadow-[0_0_30px_rgba(129,236,255,0.3)]" data-alt="Hyper-detailed 3D wireframe X-ray scan of a modern luxury sedan glowing in neon cyan and electric purple against a black background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJH9IxzykY5mcycl7Pr7dsQf02I9nNjH7gmS0GxCbmXrDdoKY03W53dUskz7CNVioK2tUXVAPI3278S940L3hsjQ3CTdWZ88R3iab2EzGttgDm6iXdhCffP7jeq-j_NUYO4WpfxHz3RcJ1WKU-A1BE1A0CLsj3_8LPkqyA76WaSd3TYbOGbpaZKXm7bq97MIHwjzNg6hZG-Eb2Eih3hnp7E0qxFVF1PQvB6rn07sHbyoQxO40HadhablBcNA3FlIxWQzAl3wu-LDs"/>
+<!-- Overlay Grid & HUD elements -->
+<div class="absolute inset-0 bg-[radial-gradient(circle,transparent_40%,#0d0e12_95%)] pointer-events-none"></div>
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: linear-gradient(#81ecff 1px, transparent 1px), linear-gradient(90deg, #81ecff 1px, transparent 1px); background-size: 40px 40px;"></div>
+<!-- Analysis Callouts -->
+<div class="absolute top-1/4 left-1/4 group cursor-crosshair">
+<div class="w-4 h-4 rounded-full border border-error bg-error/20 flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-error rounded-full animate-ping"></div>
+</div>
+<div class="absolute left-6 top-0 bg-surface-container-high border border-error/50 p-2 w-32 opacity-0 group-hover:opacity-100 transition-opacity">
+<p class="font-label text-[8px] text-error font-bold">STRUCTURAL_ANOMALY</p>
+<p class="font-label text-[10px] text-on-surface">PTS-2.42-Z</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Scan Line Effect -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+<div class="w-full h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent absolute animate-[scan_4s_linear_infinite]" style="top: 20%"></div>
+</div>
+<!-- Bottom HUD Data -->
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end z-10">
+<div class="flex gap-4">
+<div class="bg-surface-container-highest p-3 border-t border-primary/40">
+<p class="font-label text-[9px] text-slate-500">AXLE_STRUCT</p>
+<p class="font-label text-sm text-on-surface">NOMINAL</p>
+</div>
+<div class="bg-surface-container-highest p-3 border-t border-error/40">
+<p class="font-label text-[9px] text-slate-500">CHASSIS_AUTH</p>
+<p class="font-label text-sm text-error">FAILED</p>
+</div>
+</div>
+<div class="w-32 h-12">
+<div class="flex items-end gap-1 h-full">
+<div class="w-full bg-primary/20 h-1/2"></div>
+<div class="w-full bg-primary/20 h-3/4"></div>
+<div class="w-full bg-primary/20 h-2/3"></div>
+<div class="w-full bg-primary/20 h-full"></div>
+<div class="w-full bg-primary/20 h-4/5"></div>
+<div class="w-full bg-primary/20 h-1/3"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Horizontal Technical Bar -->
+<div class="grid grid-cols-4 gap-4">
+<div class="bg-surface-container p-4 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="memory">memory</span>
+<div>
+<p class="font-label text-[9px] text-slate-500 uppercase">GPU Load</p>
+<p class="font-label text-xs text-on-surface font-bold">88.4%</p>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="database">database</span>
+<div>
+<p class="font-label text-[9px] text-slate-500 uppercase">Library Size</p>
+<p class="font-label text-xs text-on-surface font-bold">14.2 PB</p>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="shield_with_heart">shield_with_heart</span>
+<div>
+<p class="font-label text-[9px] text-slate-500 uppercase">Data Integrity</p>
+<p class="font-label text-xs text-on-surface font-bold">STABLE</p>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+<div>
+<p class="font-label text-[9px] text-slate-500 uppercase">Alert Status</p>
+<p class="font-label text-xs text-on-surface font-bold">LEVEL_C</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Charts & Final Results) -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+<!-- FFT Analysis -->
+<div class="bg-surface-container rounded-lg overflow-hidden flex flex-col">
+<div class="bg-surface-container-high px-4 py-2 flex justify-between items-center">
+<span class="font-label text-[10px] font-bold text-slate-300">FFT_SPECTRUM_ANALYSIS</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="analytics">analytics</span>
+</div>
+<div class="p-4 h-48 relative flex items-end gap-1">
+<!-- Simulated Chart -->
+<div class="flex-1 bg-primary/10 h-[40%]"></div>
+<div class="flex-1 bg-primary/20 h-[60%]"></div>
+<div class="flex-1 bg-primary/30 h-[85%]"></div>
+<div class="flex-1 bg-error/40 h-[95%]"></div>
+<div class="flex-1 bg-primary/30 h-[70%]"></div>
+<div class="flex-1 bg-primary/20 h-[50%]"></div>
+<div class="flex-1 bg-primary/10 h-[30%]"></div>
+<div class="flex-1 bg-primary/20 h-[55%]"></div>
+<div class="flex-1 bg-primary/30 h-[75%]"></div>
+<div class="flex-1 bg-primary/20 h-[45%]"></div>
+<div class="absolute bottom-4 left-0 right-0 h-px bg-outline-variant/30"></div>
+<div class="absolute top-4 right-4 flex flex-col items-end">
+<span class="text-[10px] font-label text-error font-bold">SPIKE AT 14KHz</span>
+<span class="text-[8px] font-label text-slate-500">DIGITAL_RECOMPRESSION</span>
+</div>
+</div>
+</div>
+<!-- Evidence Inventory (Bento Style) -->
+<div class="bg-surface-container rounded-lg p-4 flex-1">
+<h3 class="font-label text-[10px] font-bold text-slate-300 uppercase mb-4 tracking-widest">Evidence_Log</h3>
+<div class="space-y-3">
+<div class="bg-surface-container-highest p-3 border-l border-primary">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface">EXIF_OVERWRITE</span>
+<span class="text-[8px] font-label text-primary">02:11:45</span>
+</div>
+<div class="w-full bg-slate-900 h-1">
+<div class="bg-primary h-full w-[90%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-highest p-3 border-l border-error">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface">CLONE_STAMP_TOOL</span>
+<span class="text-[8px] font-label text-error">DETECTED</span>
+</div>
+<div class="w-full bg-slate-900 h-1">
+<div class="bg-error h-full w-[45%]"></div>
+</div>
+</div>
+<div class="bg-surface-container-highest p-3 border-l border-slate-600">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface">JPEG_COMP_SIG</span>
+<span class="text-[8px] font-label text-slate-500">MATCH_70%</span>
+</div>
+<div class="w-full bg-slate-900 h-1">
+<div class="bg-slate-600 h-full w-[70%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Export CTA -->
+<div class="bg-primary/5 border border-primary/20 p-6 rounded-lg text-center">
+<p class="font-label text-[10px] text-primary uppercase tracking-widest mb-4">Complete Investigation</p>
+<button class="w-full py-3 bg-primary text-on-primary font-bold font-label text-xs tracking-widest uppercase hover:bg-primary-container transition-colors">
+                        GENERATE_REPORT_PDF
+                    </button>
+<p class="font-label text-[8px] text-slate-600 mt-4 italic">Signed with SHA-512 Digital Signature</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Technical Bar (Mobile Only) -->
+<footer class="md:hidden fixed bottom-0 w-full bg-surface-container-high border-t border-outline-variant/10 flex justify-around items-center h-16 z-50">
+<span class="material-symbols-outlined text-primary" data-icon="dashboard">dashboard</span>
+<span class="material-symbols-outlined text-slate-500" data-icon="search">search</span>
+<div class="relative -top-4">
+<div class="bg-primary w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(129,236,255,0.5)]">
+<span class="material-symbols-outlined text-on-primary" data-icon="add">add</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500" data-icon="description">description</span>
+<span class="material-symbols-outlined text-slate-500" data-icon="account_circle">account_circle</span>
+</footer>
+</body></html>

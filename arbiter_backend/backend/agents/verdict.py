@@ -49,8 +49,8 @@ def compute_verdict(layer_scores: dict, typology: dict, sam_data: dict = None) -
         risk_score = max(risk_score, 0.95)
 
     gen_type = layer_scores.get("fft", {}).get("generator_type", "")
-    if "GAN" in gen_type or "DIFFUSION" in gen_type:
-        risk_score = max(risk_score, 0.80)
+    if "GAN_MODEL" in gen_type or "DIFFUSION_MODEL" in gen_type:
+        risk_score = max(risk_score, 0.75)
 
     exaggeration_flag = None
     if sam_data and sam_data.get("severity_percent") is not None:

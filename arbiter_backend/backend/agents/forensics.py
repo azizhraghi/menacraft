@@ -123,21 +123,25 @@ def run_fft(image: Image.Image) -> dict:
     mid_power = np.sum(power[mid_mask]) / total_power
     high_power = np.sum(power[high_mask]) / total_power
     r_hf = high_power / (low_power + 1e-10)
-    if r_hf < 0.005:
+    if r_hf < 0.0005:
+        # Almost zero high-frequency content = heavily smoothed = diffusion model
         fraud_score = 0.85
         generator_type = "DIFFUSION_MODEL"
-    elif r_hf > 0.35:
+    elif r_hf > 0.50:
+        # Extreme high-frequency artifacts = GAN checkerboard pattern
         fraud_score = 0.80
         generator_type = "GAN_MODEL"
-    elif r_hf < 0.02:
-        fraud_score = 0.55
+    elif r_hf < 0.002:
+        # Suspiciously low but not zero — could be AI upscaled or heavily filtered
+        fraud_score = 0.40
         generator_type = "POSSIBLE_AI"
     else:
-        fraud_score = max(0, 0.3 - (r_hf - 0.02) * 2)
+        # Normal JPEG / camera photo range (0.002 - 0.50)
+        fraud_score = max(0, 0.10 - (r_hf - 0.005) * 1.5)
         generator_type = "NATURAL_CAMERA"
     dct_score = _detect_dct_grid(gray)
-    if dct_score > 0.5:
-        fraud_score = max(fraud_score, dct_score * 0.9)
+    if dct_score > 0.85:
+        fraud_score = max(fraud_score, dct_score * 0.6)
         generator_type = "GAN_FINGERPRINT_DETECTED"
     log_spectrum = np.log1p(magnitude)
     spectrum_b64 = _array_to_heatmap(log_spectrum)

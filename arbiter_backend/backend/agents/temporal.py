@@ -12,9 +12,11 @@ import base64
 def run_temporal_analysis(image: Image.Image, claim_date: str = None,
                            claim_location: str = None) -> dict:
     exif_data = _extract_exif(image)
-    timestamp_result = _analyze_timestamp(exif_data, claim_date)
-    gps_result = _analyze_gps(exif_data, claim_location)
-    metadata_result = _analyze_metadata_integrity(exif_data, image)
+    is_social_media = _detect_social_media(image, exif_data)
+    
+    timestamp_result = _analyze_timestamp(exif_data, claim_date, is_social_media)
+    gps_result = _analyze_gps(exif_data, claim_location, is_social_media)
+    metadata_result = _analyze_metadata_integrity(exif_data, image, is_social_media)
 
     scores = [timestamp_result["fraud_score"],
               gps_result["fraud_score"],
@@ -83,6 +85,17 @@ def _extract_exif(image: Image.Image) -> dict:
         pass
     return result
 
+def _detect_social_media(image: Image.Image, exif_data: dict) -> bool:
+    if exif_data["has_exif"]:
+        return False
+    # Social media platforms like WhatsApp strip EXIF but often leave JFIF or predictable resolutions
+    if "jfif" in image.info:
+        return True
+    w, h = image.size
+    if image.format == "JPEG" and max(w, h) in [1600, 1080, 1280, 1024]:
+        return True
+    return False
+
 
 def _convert_gps(coord, ref) -> float:
     if not coord:
@@ -100,10 +113,17 @@ def _convert_gps(coord, ref) -> float:
         return None
 
 
-def _analyze_timestamp(exif_data: dict, claim_date: str = None) -> dict:
+def _analyze_timestamp(exif_data: dict, claim_date: str = None, is_social_media: bool = False) -> dict:
     if not exif_data["has_exif"]:
+        if is_social_media:
+            return {
+                "fraud_score": 0.0,
+                "flag": "EXIF stripped (Confirmed Social Media/Web Transmission)",
+                "datetime_original": None,
+                "interpretation": "Missing timestamp is expected for WhatsApp/Messenger images"
+            }
         return {
-            "fraud_score": 0.65,
+            "fraud_score": 0.20,
             "flag": "No EXIF data — metadata may have been stripped",
             "datetime_original": None,
             "interpretation": "Absence of EXIF suggests possible metadata scrubbing"
@@ -153,10 +173,17 @@ def _analyze_timestamp(exif_data: dict, claim_date: str = None) -> dict:
     }
 
 
-def _analyze_gps(exif_data: dict, claim_location: str = None) -> dict:
+def _analyze_gps(exif_data: dict, claim_location: str = None, is_social_media: bool = False) -> dict:
     if not exif_data["has_gps"]:
+        if is_social_media:
+            return {
+                "fraud_score": 0.0,
+                "flag": "No GPS data (Platform Privacy Scrubbing)",
+                "coordinates": None,
+                "interpretation": "Location removed by social media platform"
+            }
         return {
-            "fraud_score": 0.3,
+            "fraud_score": 0.05,
             "flag": "No GPS data in image",
             "coordinates": None,
             "interpretation": "Cannot verify incident location"
@@ -187,12 +214,15 @@ def _analyze_gps(exif_data: dict, claim_location: str = None) -> dict:
     }
 
 
-def _analyze_metadata_integrity(exif_data: dict, image: Image.Image) -> dict:
+def _analyze_metadata_integrity(exif_data: dict, image: Image.Image, is_social_media: bool = False) -> dict:
     score = 0.0
     flags = []
     if not exif_data["has_exif"]:
-        score += 0.5
-        flags.append("No EXIF data detected")
+        if is_social_media:
+            flags.append("Metadata cleanly stripped by social media platform")
+        else:
+            score += 0.15
+            flags.append("No EXIF data detected")
     suspicious_software = ["photoshop", "gimp", "lightroom", "midjourney",
                            "stable diffusion", "dall-e", "adobe", "canva"]
     sw = (exif_data.get("software") or "").lower()
